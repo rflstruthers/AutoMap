@@ -1,0 +1,39 @@
+﻿
+@model WebApplication2.Models.ReadCompaniesResponse
+@{
+    ViewBag.Title = "Companies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Companies:</h2>
+
+@{
+    <table class="table">
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                ID
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.Companies)
+        {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyID)
+        </td>
+        <td>
+            <a href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)" title="View Areas"><i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">View Areas</i></a>
+        </td>
+        
+
+    </tr>
+            
+        }
+    </table>
+}

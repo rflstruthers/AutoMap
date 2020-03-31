@@ -1,0 +1,140 @@
+﻿@*@model WebApplication2.Models.Polygon*@
+@{
+    ViewBag.Title = "CreatePolygon";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<title>@ViewBag.Title</title>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+</head>
+
+<body>
+
+    <h2>Create New Area</h2>
+
+    <table>
+        <tr>
+            <td>Area Name: </td>
+            <td>
+                @Html.TextBox("Name")
+                <input type="button" value="Save Changes" id="SaveChanges" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+            </td>
+        </tr>   
+    </table>
+    
+
+    
+
+    <div id="map" style="height:400px;width:100%;"></div>
+
+    <script>
+
+        var poly;
+        var map;
+        var coordinatesArray;
+
+        function initMap() {
+
+            //var polyOptions = {
+            //    strokeColor: '#FF0000',
+            //    strokeOpacity: 0.8,
+            //    strokeWeight: 2,
+            //    map: map
+            //};
+            //poly = new google.maps.Polygon(polyOptions);
+            //var bounds = new google.maps.LatLngBounds();
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: {lat: 45.5051, lng: -122.6750},
+                mapTypeId: 'satellite'
+            });
+
+            var drawingManager = new google.maps.drawing.DrawingManager({
+              drawingMode: google.maps.drawing.OverlayType.POLYGON,
+              drawingControl: true,
+              drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: ['polygon']
+              }
+            });
+            drawingManager.setMap(map);
+
+            google.maps.event.addListener(drawingManager, 'overlaycomplete', function(polygon) {
+                coordinatesArray = polygon.overlay.getPath().getArray();
+            });
+
+            //var evtListnr = google.maps.event.addListener(map,"click",function(evt) {
+            //bounds.extend(evt.latLng);
+            //addLatLng(evt);
+            //    if (poly.getPath().getLength() == 4) {
+            //      google.maps.event.removeListener(evtListnr);
+            //    }
+            //});
+
+            //  poly.binder = new MVCArrayBinder(poly.getPath());
+
+            //  poly.setMap(map);
+
+            // Construct the polygon.
+            //var polygon = new google.maps.Polygon({
+            //    path: myArray,
+            //    strokeColor: '#FF0000',
+            //    strokeOpacity: 0.8,
+            //    strokeWeight: 2,
+            //    fillColor: '#FF0000',
+            //    fillOpacity: 0.35,
+            //    editable: true
+            //});
+
+            //polygon.setMap(map);
+
+            // set event listeners for when vertex are moved, and capture them with button click
+            //google.maps.event.addListener(polygon.getPath(), 'set_at', processVertex);
+            ////google.maps.event.addListener(polygon.getPath(), 'insert_at', processVertex);
+            //var polyPoints = []
+            //var polyPointsPost = []
+            //function processVertex(e) {
+            //    var newPoints = []
+            //    for (var i = 0; i < this.getLength(); i++) {
+            //        newPoints.push(this.getAt(i));
+            //        polyPoints = newPoints;
+            //    }
+            //}
+
+            $('#SaveChanges').click(function (e) {
+                // post new polygon data to CreatePolygon method
+                var url = "@Url.Action("SaveCreatedPolygon","Company")";
+
+                var model = { polyPoints: JSON.stringify(coordinatesArray), polyName: $("#Name").val(), companyId: @ViewBag.companyId };
+
+                $.ajax({
+                    type: 'POST',
+                    data: model,
+                    url: url,
+                    success: function (data) {
+                        window.location.href = data;
+                    }
+                });
+            });
+
+           google.maps.event.addDomListener(window, "load", initialize);
+
+        }
+
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlNR7AYiRN1PF6p3tf9q7B28fk5d8Dx6o&libraries=drawing&callback=initMap"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body>
+
+@*AIzaSyAlNR7AYiRN1PF6p3tf9q7B28fk5d8Dx6o*@

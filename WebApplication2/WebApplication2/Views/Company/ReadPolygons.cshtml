@@ -1,0 +1,66 @@
+﻿@model WebApplication2.Models.ReadPolygonResponse
+@{
+    ViewBag.Title = "Areas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    TempData["companyId"] = ViewBag.companyId;
+}
+
+<title>@ViewBag.Title</title>
+
+
+<fieldset>
+    <h2>Areas: </h2>
+    <h4 style="background-color: yellow;">@TempData["deleteMessage"]</h4>
+    <h4 style="background-color: yellow;">@TempData["createMessage"]</h4>
+    <h4 style="background-color: yellow;">@TempData["updateMessage"]</h4>
+    @{
+        <table class="table">
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    Area ID
+                </th>
+                <th>
+                    Area Name
+                </th>
+            </tr>
+
+
+
+            @foreach (var polygon in Model.Polygons)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("ViewPolygon", "Company", new {
+                                polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
+                            }, null)" title="View Area">
+                            <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">View / Update Area</i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="@Url.Action("DeletePolygon", "Company", new { polyId = polygon.PolygonID }, null)" title="Delete Area">
+                            <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">Delete Area</i>
+                        </a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => polygon.PolygonID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => polygon.PolygonName)
+                    </td>
+                </tr>
+
+
+            }
+            <tr>
+                <td>
+                    <a href="@Url.Action("CreatePolygon", "Company", new { companyId = ViewBag.companyId }, null)" title="Create New Area">
+                        <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">Create New Area</i>
+                    </a>
+                </td>
+            </tr>
+
+        </table>
+    }
+</fieldset>
