@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication2.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Diagnostics;
+using WebApplication2.DAL;
 
 namespace WebApplication2.Controllers
 {
     public class CompanyController : Controller
     {
+        readonly AutoMapContext db = new AutoMapContext();
+
         public ActionResult ReadPolygons(int id)
         {
+            AuthorizationRequest user = (from l in db.AuthorizationRequests
+                         where l.Login != null
+                         select l).FirstOrDefault();
+            
             using (var client = new HttpClient())
             {
                 // [Route("geofence/readpolygons")]
@@ -21,10 +27,10 @@ namespace WebApplication2.Controllers
                 
                 ReadPolygonRequest polygonRequest = new ReadPolygonRequest
                 {
-                    Authorization = new AuthorizationRequest { Login = "rflstruthers@gmail.com", Password = "Putters1225!", RequestingAppName = "", RequestingAppVersion = "" },
+                    Authorization = user,
                     CompanyIDs = new List<int> { id }
                 };
-                //REST servise url
+                //REST service url
                 client.BaseAddress = new Uri("https://scott.lotlocate.com/REST/");
                 //readcompanies REST call
                 var response = client.PostAsJsonAsync("geofence/readpolygons", polygonRequest).Result;
@@ -40,7 +46,7 @@ namespace WebApplication2.Controllers
             } 
         }
 
-        public ActionResult ViewPolygon(int polyId, string polyName, string polyPoints)
+        public ActionResult ViewPolygon(int companyId, int polyId, string polyName, string polyPoints)
         {
             List<Point> points = System.Web.Helpers.Json.Decode<List<Point>>(polyPoints);
             Polygon polygon = new Polygon
@@ -49,7 +55,7 @@ namespace WebApplication2.Controllers
                 PolygonName = polyName,
                 Points = points
             };
-            //ViewBag.Message = TempData["Message"];
+            ViewBag.companyId = companyId;
             return View(polygon);
         }
 
@@ -71,9 +77,14 @@ namespace WebApplication2.Controllers
                     PolygonName = polyName,
                     Points = points
                 };
+
+                AuthorizationRequest user = (from l in db.AuthorizationRequests
+                                             where l.Login != null
+                                             select l).FirstOrDefault();
+
                 UpdatePolygonRequest polygonRequest = new UpdatePolygonRequest
                 {
-                    Authorization = new AuthorizationRequest { Login = "rflstruthers@gmail.com", Password = "Putters1225!", RequestingAppName = "", RequestingAppVersion = "" },
+                    Authorization = user,
                     Polygons = new List<Polygon> { polygon }
                 };
                 //REST servise url
@@ -100,8 +111,6 @@ namespace WebApplication2.Controllers
         
         public ActionResult CreatePolygon(int companyId)
         {
-            //List<int> Ids = System.Web.Helpers.Json.Decode<List<int>>(polyIds);
-            //ViewBag.polyId = Ids.Max();
             ViewBag.companyId = companyId;
             return View();
         }
@@ -122,9 +131,13 @@ namespace WebApplication2.Controllers
                     PolygonName = polyName,
                     Points = points
                 };
+
+                AuthorizationRequest user = (from l in db.AuthorizationRequests
+                                             where l.Login != null
+                                             select l).FirstOrDefault();
                 CreatePolygonRequest polygonRequest = new CreatePolygonRequest
                 {
-                    Authorization = new AuthorizationRequest { Login = "rflstruthers@gmail.com", Password = "Putters1225!", RequestingAppName = "", RequestingAppVersion = "" },
+                    Authorization = user,
                     CompanyID = companyId,
                     Polygons = new List<Polygon> { polygon }
                 };
@@ -155,10 +168,12 @@ namespace WebApplication2.Controllers
             {
                 // [Route("geofence/deletepolygons")]
                 // DeletePolygonResponse Post(DeletePolygonRequest query);
-
+                AuthorizationRequest user = (from l in db.AuthorizationRequests
+                                             where l.Login != null
+                                             select l).FirstOrDefault();
                 DeletePolygonRequest polygonRequest = new DeletePolygonRequest
                 {
-                    Authorization = new AuthorizationRequest { Login = "rflstruthers@gmail.com", Password = "Putters1225!", RequestingAppName = "", RequestingAppVersion = "" },
+                    Authorization = user,
                     PolygonIDs = new List<int?> { polyId }
                 };
                 //REST servise url
@@ -179,7 +194,6 @@ namespace WebApplication2.Controllers
                     TempData["deleteMessage"]  = "An error was encountered while attempting to delete area. Please try again later or contact the site administrator.";
                 }
                 return RedirectToAction("ReadPolygons", new { id =  TempData["companyId"]});
-                //return Json(Url.Action("Index", "Home"));
             }
         }
 
