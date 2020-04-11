@@ -33,14 +33,14 @@
                 <tr>
                     <td>
                         <a href="@Url.Action("ViewPolygon", "Company", new {
-                                polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
+                                companyId = ViewBag.companyId, polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
                             }, null)" title="View Area">
-                            <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">View / Update Area</i>
+                            <input type="button" value="View / Update Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
                         </a>
                     </td>
                     <td>
                         <a href="@Url.Action("DeletePolygon", "Company", new { polyId = polygon.PolygonID }, null)" title="Delete Area">
-                            <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">Delete Area</i>
+                            <input type="button" value="Delete Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
                         </a>
                     </td>
                     <td>
@@ -56,7 +56,7 @@
             <tr>
                 <td>
                     <a href="@Url.Action("CreatePolygon", "Company", new { companyId = ViewBag.companyId }, null)" title="Create New Area">
-                        <i class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;">Create New Area</i>
+                        <input type="button" value="Create New Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
                     </a>
                 </td>
             </tr>
