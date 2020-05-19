@@ -170,3 +170,4 @@ C:\Users\User0\Documents\GitHub\AutoMap\WebApplication2\WebApplication2\bin\Enti
 C:\Users\User0\Documents\GitHub\AutoMap\WebApplication2\WebApplication2\bin\EntityFramework.xml
 C:\Users\User0\Documents\GitHub\AutoMap\WebApplication2\WebApplication2\bin\EntityFramework.SqlServer.xml
 C:\Users\User0\Documents\GitHub\AutoMap\WebApplication2\WebApplication2\obj\Debug\WebApplication2.csprojAssemblyReference.cache
+C:\Users\User0\Documents\GitHub\AutoMap\WebApplication2\WebApplication2\obj\Debug\WebApplication2.csproj.CoreCompileInputs.cache

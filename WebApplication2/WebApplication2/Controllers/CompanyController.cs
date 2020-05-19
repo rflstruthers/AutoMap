@@ -7,14 +7,19 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Diagnostics;
 using WebApplication2.DAL;
+using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
+using System.EnterpriseServices;
 
 namespace WebApplication2.Controllers
 {
     public class CompanyController : Controller
     {
+        // Must enter Google Maps API Key here:
+        readonly string apiKey = "";
         readonly AutoMapContext db = new AutoMapContext();
 
-        public ActionResult ReadPolygons(int id)
+        public async Task<ActionResult> ReadPolygons(int id)
         {
             AuthorizationRequest user = (from l in db.AuthorizationRequests
                          where l.Login != null
@@ -33,9 +38,9 @@ namespace WebApplication2.Controllers
                 //REST service url
                 client.BaseAddress = new Uri("https://scott.lotlocate.com/REST/");
                 //readcompanies REST call
-                var response = client.PostAsJsonAsync("geofence/readpolygons", polygonRequest).Result;
+                var response = await client.PostAsJsonAsync("geofence/readpolygons", polygonRequest);
                 //response
-                string responseString = response.Content.ReadAsStringAsync().Result;
+                string responseString = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine(responseString);
                 //Map response to ReadPolygonResponse model
                 ReadPolygonResponse polygonResponse = JsonConvert.DeserializeObject<ReadPolygonResponse>(responseString);
@@ -56,12 +61,13 @@ namespace WebApplication2.Controllers
                 Points = points
             };
             ViewBag.companyId = companyId;
+            ViewBag.apiKey = apiKey;
             return View(polygon);
         }
 
         // Sends updatepolygons rest call
         // method is called on a click event in ViewPolygon.cshtml
-        public ActionResult UpdatePolygon(int polyId, string polyName, string polyPoints)
+        public async Task<ActionResult> UpdatePolygon(int polyId, string polyName, string polyPoints)
         {
             using (var client = new HttpClient())
             {
@@ -90,9 +96,9 @@ namespace WebApplication2.Controllers
                 //REST servise url
                 client.BaseAddress = new Uri("https://scott.lotlocate.com/REST/");
                 //updatepolygons REST call
-                var response = client.PostAsJsonAsync("geofence/updatepolygons", polygonRequest).Result;
+                var response = await client.PostAsJsonAsync("geofence/updatepolygons", polygonRequest);
                 //response
-                string responseString = response.Content.ReadAsStringAsync().Result;
+                string responseString = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(responseString);
                 //Map response to UpdatePolygonResponse model
                 UpdatePolygonResponse polygonResponse = JsonConvert.DeserializeObject<UpdatePolygonResponse>(responseString);
@@ -112,11 +118,12 @@ namespace WebApplication2.Controllers
         public ActionResult CreatePolygon(int companyId)
         {
             ViewBag.companyId = companyId;
+            ViewBag.apiKey = apiKey;
             return View();
         }
 
         
-        public ActionResult SaveCreatedPolygon(int companyId, string polyName, string polyPoints)
+        public async Task<ActionResult> SaveCreatedPolygon(int companyId, string polyName, string polyPoints)
         {
             using (var client = new HttpClient())
             {
@@ -144,9 +151,9 @@ namespace WebApplication2.Controllers
                 //REST servise url
                 client.BaseAddress = new Uri("https://scott.lotlocate.com/REST/");
                 //readcompanies REST call
-                var response = client.PostAsJsonAsync("geofence/createpolygons", polygonRequest).Result;
+                var response = await client.PostAsJsonAsync("geofence/createpolygons", polygonRequest);
                 //response
-                string responseString = response.Content.ReadAsStringAsync().Result;
+                string responseString = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine(responseString);
                 //Map response to CreatePolygonResponse model
                 CreatePolygonResponse polygonResponse = JsonConvert.DeserializeObject<CreatePolygonResponse>(responseString);
@@ -162,7 +169,7 @@ namespace WebApplication2.Controllers
             }
         }
 
-        public ActionResult DeletePolygon(int polyId)
+        public async Task<ActionResult> DeletePolygon(int polyId)
         {
             using (var client = new HttpClient())
             {
@@ -179,9 +186,9 @@ namespace WebApplication2.Controllers
                 //REST servise url
                 client.BaseAddress = new Uri("https://scott.lotlocate.com/REST/");
                 //readcompanies REST call
-                var response = client.PostAsJsonAsync("geofence/deletepolygons", polygonRequest).Result;
+                var response = await client.PostAsJsonAsync("geofence/deletepolygons", polygonRequest);
                 //response
-                string responseString = response.Content.ReadAsStringAsync().Result;
+                string responseString = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine(responseString);
                 //Map response to DeletePolygonResponse model
                 DeletePolygonResponse polygonResponse = JsonConvert.DeserializeObject<DeletePolygonResponse>(responseString);
