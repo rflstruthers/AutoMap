@@ -16,7 +16,7 @@ namespace WebApplication2.Controllers
     public class CompanyController : Controller
     {
         // Must enter Google Maps API Key here:
-        readonly string apiKey = "AIzaSyAlNR7AYiRN1PF6p3tf9q7B28fk5d8Dx6o";
+        readonly string apiKey = "";
         readonly AutoMapContext db = new AutoMapContext();
 
         public async Task<ActionResult> ReadPolygons(int id)
