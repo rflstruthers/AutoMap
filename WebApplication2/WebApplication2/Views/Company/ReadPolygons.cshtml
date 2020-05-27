@@ -21,75 +21,63 @@
     <h4 style="background-color: yellow;">@TempData["deleteMessage"]</h4>
     <h4 style="background-color: yellow;">@TempData["createMessage"]</h4>
     <h4 style="background-color: yellow;">@TempData["updateMessage"]</h4>
-    @{
-        <table class="table">
-            <tr>
-                <th></th>
-                <th></th>
-                <th>
-                    Area ID
-                </th>
-                <th>
-                    Area Name
-                </th>
-            </tr>
-
-
-
-            @foreach (var polygon in Model.Polygons)
-            {
-                <tr>
-                    <td>
-                        <a href="@Url.Action("ViewPolygon", "Company", new {
-                                companyId = ViewBag.companyId, polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
-                            }, null)" title="View Area">
-                            <input type="button" value="View / Update Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-                        </a>
-                    </td>
-                    <td>
-                        <a href="@Url.Action("DeletePolygon", "Company", new { polyId = polygon.PolygonID }, null)" title="Delete Area">
-                            <input type="button" value="Delete Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-                        </a>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => polygon.PolygonID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => polygon.PolygonName)
-                    </td>
-                </tr>
-
-
-            }
-        <tr>
-            <td>
-                <a href="@Url.Action("CreatePolygon", "Company", new { companyId = ViewBag.companyId }, null)" title="Create New Area">
-                    <input type="button" value="Create New Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-                </a>
-            </td>
-            <td>
-                <input type="button" value="Save Changes" id="SaveChanges" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-            </td>
-            <td>
-                <a href="@Url.Action("ReadPolygons", "Company", new { id = ViewBag.companyId }, null)" title="Discard Changes">
-                    <input type="button" value="Discard Changes" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-                </a>
-            </td>
-        </tr>
-            
-        </table>
-    }
 
     <h4>
         Drag markers to change area. Click on map to add new marker. Click on existing marker to delete marker. 3 or 4 markers only.<br />
     </h4>
 
+    <div id="buttons">
+        <input type="button" value="Create Area" id="Create" onclick="createPolygon()" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+        <input type="button" value="Save Changes" id="SaveChanges" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+        <input type="button" value="Discard Changes" id="DiscardChanges" onclick="removeMapOnAll()" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+        <input type="button" value="Delete Area" id="DeleteArea" class="btn btn-danger" style="height:29px; line-height:75%; border-radius:0;" />
+    </div>
+
+    <div id="creating" style="display: none; background-color: yellow;">
+        <p>Area Name: @Html.TextBox("Name")</p>
+        Click on map to add markers.
+        <input type="button" value="Save Changes" id="SaveCreated" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+        <input type="button" value="Discard Area" id="DiscardCreated" onclick="removeMapOnAll()" class="btn btn-danger" style="height:29px; line-height:75%; border-radius:0;" />
+
+    </div>
     <div id="map" style="height:400px;width:100%;"></div>
+    
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>
+                Area ID
+            </th>
+            <th>
+                Area Name
+            </th>
+        </tr>
+
+        @foreach (var polygon in Model.Polygons)
+        {
+            <tr>
+                <td>
+                    <a href="@Url.Action("ViewPolygon", "Company", new {
+                                companyId = ViewBag.companyId, polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
+                            }, null)" title="View Area">
+                        <input type="button" value="View / Update Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => polygon.PolygonID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => polygon.PolygonName)
+                </td>
+            </tr>
+
+
+        }
+    </table>
 
     <script>
 
         var map;
-
         var areas = [];
         var area = {};
         var polyPoints = [];
@@ -101,14 +89,43 @@
         var savePolygon = [];
         var bounds;
         var sortedPoints = [];
+        var c = document.getElementById("creating");
+        var b = document.getElementById("buttons");
+        var listener;
 
         function initMap() {
-            // Initialize map with center being the center of the polygon
+
+            // Remove editing display/ability if it exists.
+            listener = null;
+            if (c.style.display === "block") {
+                c.style.display = "none";
+            } else {
+                c.style.display = "none";
+            }
+
+            // Add all points from all polygons to pointsArray, make pointsArray the map bounds so map
+            // can be centered on all polygons.
+            var pointsArray = [];
+            @foreach (var polygon in Model.Polygons)
+            {
+
+                foreach (var d in polygon.Points)
+                {
+
+                    @:pointsArray.push({ lat: @d.Latitude, lng: @d.Longitude});
+                }
+            }
+            bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < pointsArray.length; i++) {
+                bounds.extend(pointsArray[i]);
+            }
+
+            // Initialize map with center being the center of all the points
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 11,
-                //center: bounds.getCenter(),
-                center: { lat: 45.479750227876, lng: -122.674423063477 },
-                mapTypeId: 'satellite'
+            zoom: 11,
+            center: bounds.getCenter(),
+            //center: { lat: 45.479750227876, lng: -122.674423063477 },
+            mapTypeId: 'satellite'
             });
 
             // Mapping points from model to js array in a format Google Maps likes
@@ -135,36 +152,50 @@
                     // Add listener to see if polygon is clicked. Add editable markers and new polygon over clicked on polygon.
                     google.maps.event.addListener(polygon, 'click', function (event) {
 
+                        listener = map.addListener('click', function (location) {
+                            addMarker(location.latLng);
+                        });
                         // remove any existing markers
                         for (var i = 0; i < markers.length; i++) {
                             markers[i].setMap(null);
                         }
                         markers = [];
                         var polygonBounds = this.getPath();
-                        
+                        bounds = new google.maps.LatLngBounds();
                         for (var i = 0; i < polygonBounds.length; i++) {
                             var point = {
                                 lat: polygonBounds.getAt(i).lat(),
                                 lng: polygonBounds.getAt(i).lng()
                             };
                             addMarker(point);
+                            bounds.extend(point);
                         }
                         savePolygon = this;
+
+                        map.setZoom(12);
+
+                        map.setCenter(bounds.getCenter());
                     });
                     polygon.setMap(map);
                 </text>
-             }
+            }
+        }
 
-                //// Get the center of existing polygon
-                //bounds = new google.maps.LatLngBounds();
-                //for (var i = 0; i < pointsArray.length; i++) {
-                //  bounds.extend(pointsArray[i]);
-                //}
+        function createPolygon() {
+            //e.classList.toggle("btn-danger");
 
-                //// This event listener will call addMarker() when the map is clicked.
-                //map.addListener('click', function (location) {
-                //    addMarker(location.latLng);
-                //});
+            if (c.style.display === "none") {
+                b.style.display = "none"
+                c.style.display = "block";
+                listener = map.addListener('click', function (location) {
+                    addMarker(location.latLng);
+                });
+            }
+            else {
+                c.style.display = "block";
+                b.style.display = "none";
+                google.maps.event.removeListener(listener);
+            }
         }
 
         // Add markers to clicked polygon
@@ -205,7 +236,7 @@
             });
         }
 
-            // function to dray polygon around markers
+        // function to dray polygon around markers
         function drawPolyline() {
             var markersPositionArray = [];
             var pointsArray = [];
@@ -264,6 +295,32 @@
             }
         }
 
+        // Sets the map on all markers in the array.
+        function removeMapOnAll(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            if (editPolygon !== null) {
+                editPolygon.setMap(null);
+            }
+            markers = [];
+            savePolygon = [];
+
+            if (c.style.display === "block") {
+                b.style.display = "block"
+                c.style.display = "none";
+                google.maps.event.removeListener(listener);
+            }
+            else {
+                b.style.display = "block";
+                c.style.display = "none";
+                google.maps.event.removeListener(listener);
+            }
+            $(document).ready(function () {
+                $("#Name").val("");
+            });
+        }
+
         // post new polygon data to UpdatePolygon method
         $(document).ready(function(){
             $('#SaveChanges').click(function (e) {
@@ -283,6 +340,50 @@
                     }
                 });
             });
+
+            // Delete selected area
+            $('#DeleteArea').click(function (e) {
+                var url = "@Url.Action("DeletePolygon","Company")";
+
+                var model = { polyId: savePolygon.id };
+
+                $.ajax({
+                    type: 'POST',
+                    data: model,
+                    url: url,
+                    success: function (data) {
+                        window.location.href = data;
+                    }
+                });
+            });
+
+                    // post new polygon data to SaveCreatedPolygon method
+        
+            $('#SaveCreated').click(function (e) {
+                var url = "@Url.Action("SaveCreatedPolygon","Company")";
+                for (var i = 0; i < markers.length; i++) {
+                    polyPoints.push(markers[i].position);
+                }
+                var model = { polyPoints: JSON.stringify(polyPoints), polyName: $("#Name").val(), companyId: @ViewBag.companyId };
+
+                $.ajax({
+                    type: 'POST',
+                    data: model,
+                    url: url,
+                    success: function (data) {
+                        window.location.href = data;
+                    }
+                });
+            });
+        
+
+            //$('#DiscardChanges').click(function (e) {
+            //    initMap();
+            //});
+
+            //$('#Create').click(function (e) {
+            //    createPolygon(e);
+            //});
         });
 
     </script>

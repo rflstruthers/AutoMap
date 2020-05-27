@@ -197,7 +197,7 @@ namespace WebApplication2.Controllers
                 {
                     TempData["deleteMessage"]  = "An error was encountered while attempting to delete area. Please try again later or contact the site administrator.";
                 }
-                return RedirectToAction("ReadPolygons", new { id =  TempData["companyId"]});
+                return Json(Url.Action("ReadPolygons", "Company", new { id = TempData["companyId"] }));
             }
         }
 
