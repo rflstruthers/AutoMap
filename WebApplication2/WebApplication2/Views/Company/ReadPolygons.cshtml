@@ -10,99 +10,210 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 
 <body>
-    <h2>Areas: </h2>
-    <h4 style="background-color: yellow;">@TempData["deleteMessage"]</h4>
-    <h4 style="background-color: yellow;">@TempData["createMessage"]</h4>
-    <h4 style="background-color: yellow;">@TempData["updateMessage"]</h4>
+    <br />
+    <div id="mapView">
+        <div id="buttons">
+            <div class="card-header">
+                <div class="areas-top">
+                    <span class="open-nav">&#9776;</span>
+                    <span class="title"> Areas</span>
+                    <span class="sub-header">Click on area to edit</span>
+                    <span id="alerts">
+                        @TempData["deleteMessage"]
+                        @TempData["createMessage"]
+                        @TempData["updateMessage"]
+                    </span>
+                    <div class="btn-group right" role="group">
+                        <button type="button" class="btn lView" title="List View">List</button>
+                    </div>
+                    <div class="btn-group left" role="group">
+                        @*<button type="button" class="btn all">View All</button>*@
+                        <button type="button" id="CreateBtn" class="btn" title="Create a New Area">Create Area</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
 
-    <h4>
-        Drag markers to change area. Click on map to add new marker. Click on existing marker to delete marker. 3 or 4 markers only.<br />
-    </h4>
+        <div id="edit" style="display: none;">
+            <div class="card-header">
+                <div class="areas-top">
+                    <span class="open-nav">&#9776;</span>
+                    <span class="title"> Areas</span>
+                    <span class="sub-header">
+                        Editing
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"data-toggle="tooltip" 
+                                data-placement="right" title="Click on map to add markers. Drag marker to change area.
+                                Click on existing marker to delete marker. 3 or 4 markers only."></span>
+                        <span id="editingName"></span>
+                    </span>
 
-    <div id="buttons">
-        <input type="button" value="Create Area" id="Create" onclick="createPolygon()" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-        <input type="button" value="Save Changes" id="SaveChanges" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-        <input type="button" value="Discard Changes" id="DiscardChanges" onclick="removeMapOnAll()" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-        <input type="button" value="Delete Area" id="DeleteArea" class="btn btn-danger" style="height:29px; line-height:75%; border-radius:0;" />
+                    <div class="btn-group right" role="group">
+                        <button type="button" class="btn lView" title="List View">List</button>
+                        @*<button type="button" class="btn all">View All</button>*@
+                    </div>
+                    <div class="btn-group left" role="group">
+                        <button type="button" id="SaveChanges" class="btn save">Save Changes</button>
+                        <button type="button" class="btn discard">Discard Changes</button>
+                        <button type="button" id="DeleteArea" class="btn delete">Delete Area</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="creating" style="display: none;">
+            <div class="card-header">
+                <div class="areas-top">
+                    <span class="open-nav">&#9776;</span>
+                    <span class="title"> Areas</span>
+                    <span class="sub-header">
+                        Create a New Area
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip"
+                              data-placement="right" title="Click on map to add markers.
+                            Click on existing marker to delete marker.
+                            3 or 4 markers only."></span>
+                    </span>
+                    <div class="btn-group right" role="group">
+                        <button type="button" class="btn lView" title="List View">List</button>
+                        @*<button type="button" class="btn all">View All</button>*@
+                    </div>
+                    <input type="text" id="enterName" class="form-control" placeholder="Area Name">
+                    <div class="btn-group left" role="group">
+                        <button type="button" id="SaveCreated" class="btn save">Save Area</button>
+                        <button type="button" class="btn discard">Discard Area</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div id="map"></div>
+        </div>
     </div>
 
-    <div id="creating" style="display: none; background-color: yellow;">
-        <p>Area Name: @Html.TextBox("Name")</p>
-        Click on map to add markers.
-        <input type="button" value="Save Changes" id="SaveCreated" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-        <input type="button" value="Discard Area" id="DiscardCreated" onclick="removeMapOnAll()" class="btn btn-danger" style="height:29px; line-height:75%; border-radius:0;" />
+    <div id="listView" style="display:none;">
+
+        <div class="card-header">
+            <div class="areas-top">
+                <span class="open-nav">&#9776;</span>
+                <span class="title"> Areas</span>
+                <button id="mView" type="button" class="btn right" title="Map View">Map</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="areaInfo">
+            </div>
+        </div>
 
     </div>
-    <div id="map" style="height:400px;width:100%;"></div>
-    
-    <table class="table">
-        <tr>
-            <th></th>
-            <th>
-                Area ID
-            </th>
-            <th>
-                Area Name
-            </th>
-        </tr>
-
-        @foreach (var polygon in Model.Polygons)
-        {
-            <tr>
-                <td>
-                    <a href="@Url.Action("ViewPolygon", "Company", new {
-                                companyId = ViewBag.companyId, polyId = polygon.PolygonID, polyName = polygon.PolygonName, polyPoints = Json.Encode(polygon.Points)
-                            }, null)" title="View Area">
-                        <input type="button" value="View / Update Area" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
-                    </a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => polygon.PolygonID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => polygon.PolygonName)
-                </td>
-            </tr>
-
-
-        }
-    </table>
 
     <script>
-
         var map;
-        var areas = [];
-        var area = {};
         var polyPoints = [];
         var marker;
         var markers = [];
-        var counter = 0;
-        var polygon;
+        var polygon = [];
         var editPolygon = null;
         var savePolygon = [];
         var bounds;
         var sortedPoints = [];
         var c = document.getElementById("creating");
         var b = document.getElementById("buttons");
-        var listener;
+        var e = document.getElementById("edit");
+        var mapListener;
+        var polyListener;
+
+        // toggle between map and list views
+        var m = document.getElementById("mapView");
+        var l = document.getElementById("listView");
+        function showMap() {
+            l.style.display = "none"
+            m.style.display = "block";
+        }
+        function showList() {
+            m.style.display = "none"
+            l.style.display = "block";
+        }
+
+        // Make alerts go away after 3 seconds.
+        var a = document.getElementById("alerts");
+        setTimeout(function () { a.style.display = "none" }, 3000);
+
+        
+
+        ///* View in fullscreen */
+        //function openFullscreen() {
+        //    if (m.requestFullscreen) {
+        //        m.requestFullscreen();
+        //    } else if (m.mozRequestFullScreen) { /* Firefox */
+        //        m.mozRequestFullScreen();
+        //    } else if (m.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        //        m.webkitRequestFullscreen();
+        //    } else if (m.msRequestFullscreen) { /* IE/Edge */
+        //        m.msRequestFullscreen();
+        //    }
+        //}
+
+        ///* Close fullscreen */
+        //function closeFullscreen() {
+        //    if (document.exitFullscreen) {
+        //        document.exitFullscreen();
+        //    } else if (document.mozCancelFullScreen) { /* Firefox */
+        //        document.mozCancelFullScreen();
+        //    } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+        //        document.webkitExitFullscreen();
+        //    } else if (document.msExitFullscreen) { /* IE/Edge */
+        //        document.msExitFullscreen();
+        //    }
+        //}
+
+        function CenterControl(controlDiv, map) {
+
+            // Set CSS for the control border.
+            var controlUI = document.createElement('div');
+            controlUI.style.backgroundColor = '#fff';
+            //controlUI.style.border = '2px solid #fff';
+            controlUI.style.borderRadius = '3px';
+            controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+            controlUI.style.cursor = 'pointer';
+            controlUI.style.marginRight = '10px';
+            controlUI.style.textAlign = 'center';
+            controlUI.title = 'Click to view all areas';
+            controlDiv.appendChild(controlUI);
+
+            // Set CSS for the control interior.
+            var controlText = document.createElement('div');
+            controlText.style.color = '#111;';
+            controlText.style.fontFamily = 'Josefin Sans,sans-serif';
+            controlText.style.fontSize = '16px';
+            controlText.style.lineHeight = '38px';
+            controlText.style.paddingLeft = '5px';
+            controlText.style.paddingRight = '5px';
+            controlText.textContent = 'View All';
+            controlUI.appendChild(controlText);
+
+            // Setup the click event listeners.
+            controlUI.addEventListener('mouseenter', function () {
+                controlUI.style.backgroundColor = '#e3e7ee';
+            });
+            controlUI.addEventListener('mouseleave', function () {
+                controlUI.style.backgroundColor = '#fff';
+            });
+            controlUI.addEventListener('click', function () {
+                zoomOut(map);
+            });
+
+        }
 
         function initMap() {
-
-            // Remove editing display/ability if it exists.
-            listener = null;
-            if (c.style.display === "block") {
-                c.style.display = "none";
-            } else {
-                c.style.display = "none";
-            }
-
+            var polygons = [];
             // Add all points from all polygons to pointsArray, make pointsArray the map bounds so map
             // can be centered on all polygons.
             var pointsArray = [];
@@ -124,10 +235,13 @@
             map = new google.maps.Map(document.getElementById('map'), {
             zoom: 11,
             center: bounds.getCenter(),
-            //center: { lat: 45.479750227876, lng: -122.674423063477 },
-            mapTypeId: 'satellite'
-            });
+            mapTypeId: 'satellite',
+            disableDefaultUI: true,
+                zoomControl: true,
+            tilt: 0
 
+            });
+            map.fitBounds(bounds);
             // Mapping points from model to js array in a format Google Maps likes
             @foreach (var polygon in Model.Polygons)
             {
@@ -138,8 +252,7 @@
                     @:pointsArray.push({ lat: @d.Latitude, lng: @d.Longitude});
                 }
                 <text>
-
-                    var polygon = new google.maps.Polygon({
+                    polygon = new google.maps.Polygon({
                         paths: pointsArray,
                         strokeColor: 'black',
                         strokeWeight: 2,
@@ -149,52 +262,86 @@
                         fillOpacity: 0.2
                     });
 
-                    // Add listener to see if polygon is clicked. Add editable markers and new polygon over clicked on polygon.
-                    google.maps.event.addListener(polygon, 'click', function (event) {
+                    // Add polygons to array
+                    polygons.push(polygon);
 
-                        listener = map.addListener('click', function (location) {
-                            addMarker(location.latLng);
-                        });
-                        // remove any existing markers
-                        for (var i = 0; i < markers.length; i++) {
-                            markers[i].setMap(null);
-                        }
-                        markers = [];
-                        var polygonBounds = this.getPath();
-                        bounds = new google.maps.LatLngBounds();
-                        for (var i = 0; i < polygonBounds.length; i++) {
-                            var point = {
-                                lat: polygonBounds.getAt(i).lat(),
-                                lng: polygonBounds.getAt(i).lng()
-                            };
-                            addMarker(point);
-                            bounds.extend(point);
-                        }
-                        savePolygon = this;
-
-                        map.setZoom(12);
-
-                        map.setCenter(bounds.getCenter());
+                    // Add listener to see if polygon is clicked.
+                    polyListener = google.maps.event.addListener(polygon, 'click', function (event) {
+                        polygonClicked(this);
                     });
+
+                    //polygon.addListener('mouseover', function () {
+                    //    polygonHover(this);
+                    //});
+
                     polygon.setMap(map);
                 </text>
+             }
+
+            // Populate list view with polygon info.
+            // When list item is clicked, jump to edit view for that polygon.
+            for (let i = 0; i < polygons.length; i++) {
+                var aInfo = document.getElementById("areaInfo");
+                var newLink = document.createElement("a");
+                newLink.className = "list-group-item areas";
+                newLink.appendChild(document.createTextNode(polygons[i].name));
+                newLink.addEventListener('click', function () {
+                    showMap();
+                    polygonClicked(polygons[i]);
+                });
+                aInfo.appendChild(newLink);
             }
+
+            // Create the DIV to hold the control and call the CenterControl()
+            // constructor passing in this DIV.
+            var centerControlDiv = document.createElement('div');
+            var centerControl = new CenterControl(centerControlDiv, map);
+
+            centerControlDiv.index = 1;
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(centerControlDiv);
         }
 
-        function createPolygon() {
-            //e.classList.toggle("btn-danger");
+        // Add editable markers and new polygon over clicked on polygon.
+        function polygonClicked(event) {
+            // remove any existing markers
+            removeMapOnAll();
+            // Show edit buttons/hide create button.
+            e.style.display = "block"
+            b.style.display = "none"
+            document.getElementById("editingName").innerHTML = event.name;
+            // Add listener to map so a marker is added if the map is clicked.
+            mapListener = map.addListener('click', function (location) {
+                addMarker(location.latLng);
+            });
+            // Draw markers and polygon.
+            var polygonBounds = event.getPath();
+            var newBounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < polygonBounds.length; i++) {
+                var point = {
+                    lat: polygonBounds.getAt(i).lat(),
+                    lng: polygonBounds.getAt(i).lng()
+                };
+                addMarker(point);
+                newBounds.extend(point);
+            }
+            // Set the selected polygon to savePolygon.
+            savePolygon = event;
+            // Zoom in on selected polygon and center the map on it.
+            //map.setZoom(12);
+            map.fitBounds(newBounds);
+            map.setCenter(newBounds.getCenter());
+        }
 
+        // Remove any markers, display create polygon controlls, add listener to add markers when the map is clicked.
+        function createPolygon() {
+            removeMarkers();
             if (c.style.display === "none") {
-                b.style.display = "none"
+                b.style.display = "none";
+                e.style.display = "none";
                 c.style.display = "block";
-                listener = map.addListener('click', function (location) {
+                mapListener = map.addListener('click', function (location) {
                     addMarker(location.latLng);
                 });
-            }
-            else {
-                c.style.display = "block";
-                b.style.display = "none";
-                google.maps.event.removeListener(listener);
             }
         }
 
@@ -204,7 +351,7 @@
                 marker = new google.maps.Marker({
                     position: point,
                     draggable: true,
-                    id: counter,
+                    //id: counter,
                     map: map,
                     icon: {
                         url: "https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle.png",
@@ -213,7 +360,7 @@
                     },
                 });
                 markers.push(marker);
-                counter++;
+                //counter++;
                 drawPolyline();
             }
 
@@ -236,7 +383,7 @@
             });
         }
 
-        // function to dray polygon around markers
+        // function to draw polygon around markers. Makes sure vertex don't intersect.
         function drawPolyline() {
             var markersPositionArray = [];
             var pointsArray = [];
@@ -248,11 +395,11 @@
             markers.forEach(function (e) { markersPositionArray.push(e.getPosition()); });
 
             // get the center of existing polygon
-            bounds = new google.maps.LatLngBounds();
+            var centerBounds = new google.maps.LatLngBounds();
             for (var i = 0; i < markersPositionArray.length; i++) {
-                bounds.extend(markersPositionArray[i]);
+                centerBounds.extend(markersPositionArray[i]);
             }
-            center = bounds.getCenter();
+            center = centerBounds.getCenter();
 
             // get the heading of each marker compared to the center point, add heading and position of each marker to pointsArray
             markersPositionArray.forEach(function (e) {
@@ -295,8 +442,8 @@
             }
         }
 
-        // Sets the map on all markers in the array.
-        function removeMapOnAll(map) {
+        // Removes markers and drawn polygons from map.
+        function removeMarkers(map) {
             for (var i = 0; i < markers.length; i++) {
                 markers[i].setMap(null);
             }
@@ -305,32 +452,36 @@
             }
             markers = [];
             savePolygon = [];
+            google.maps.event.removeListener(mapListener);
+        }
 
-            if (c.style.display === "block") {
-                b.style.display = "block"
-                c.style.display = "none";
-                google.maps.event.removeListener(listener);
-            }
-            else {
-                b.style.display = "block";
-                c.style.display = "none";
-                google.maps.event.removeListener(listener);
-            }
+        // Calls on removeMarkers() and removes create polygon display.
+        function removeMapOnAll(map) {
+            removeMarkers();
             $(document).ready(function () {
-                $("#Name").val("");
+                $("#enterName").val("");
             });
+            // Hide edit buttons
+            c.style.display = "none";
+            e.style.display = "none";
+            b.style.display = "block"
+
+        }
+
+        function zoomOut(map) {
+            map.fitBounds(bounds);
+            map.setCenter(bounds.getCenter());
+            //map.setZoom(12);
         }
 
         // post new polygon data to UpdatePolygon method
         $(document).ready(function(){
             $('#SaveChanges').click(function (e) {
                 var url = "@Url.Action("UpdatePolygon","Company")";
-
                 for (var i = 0; i < markers.length; i++) {
                     polyPoints.push(markers[i].position);
                 }
                 var model = { polyPoints: JSON.stringify(polyPoints), polyId: savePolygon.id, polyName: savePolygon.name };
-
                 $.ajax({
                     type: 'POST',
                     data: model,
@@ -344,9 +495,7 @@
             // Delete selected area
             $('#DeleteArea').click(function (e) {
                 var url = "@Url.Action("DeletePolygon","Company")";
-
                 var model = { polyId: savePolygon.id };
-
                 $.ajax({
                     type: 'POST',
                     data: model,
@@ -357,14 +506,13 @@
                 });
             });
 
-                    // post new polygon data to SaveCreatedPolygon method
-        
+            // post new polygon data to SaveCreatedPolygon method
             $('#SaveCreated').click(function (e) {
                 var url = "@Url.Action("SaveCreatedPolygon","Company")";
                 for (var i = 0; i < markers.length; i++) {
                     polyPoints.push(markers[i].position);
                 }
-                var model = { polyPoints: JSON.stringify(polyPoints), polyName: $("#Name").val(), companyId: @ViewBag.companyId };
+                var model = { polyPoints: JSON.stringify(polyPoints), polyName: $("#enterName").val(), companyId: @ViewBag.companyId };
 
                 $.ajax({
                     type: 'POST',
@@ -375,16 +523,44 @@
                     }
                 });
             });
-        
 
-            //$('#DiscardChanges').click(function (e) {
-            //    initMap();
+            $('.btn.discard').click(function (e) {
+                removeMapOnAll();
+                zoomOut(map);
+            });
+            
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+
+            $('.btn.lView').click(function (e) {
+                showList();
+            });
+
+            $('#mView').click(function (e) {
+                showMap();
+            });
+
+            //$('#full').click(function (e) {
+            //    openFullscreen();
             //});
 
-            //$('#Create').click(function (e) {
-            //    createPolygon(e);
-            //});
+            $('.btn.all').click(function (e) {
+                zoomOut(map);
+            });
+
+            $('#CreateBtn').click(function (e) {
+                createPolygon();
+            });
+
+            $('.open-nav').click(function (e) {
+                openNav();
+            });
         });
+
+
+
+
 
     </script>
     @*Enter Your Google Api Key*@

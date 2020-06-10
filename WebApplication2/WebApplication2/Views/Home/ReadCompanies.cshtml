@@ -4,38 +4,22 @@
     ViewBag.Title = "Companies";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Companies:</h2>
-
-@{
-    <table class="table">
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                ID
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model.Companies)
-        {
-            <tr>
-                <td>
+<br />
+    <div class="card-header">
+        <span class="open-nav" onclick="openNav()">&#9776;</span>
+        <span class="title"> Companies</span>
+    </div>
+        <div class="flex-card">
+            @foreach (var item in Model.Companies)
+            {
+                @*<a href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)"
+                   title="View Areas" class="list-group-item companies">
                     @Html.DisplayFor(modelItem => item.CompanyName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CompanyID)
-                </td>
-                <td>
-                    <a href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)" title="View Areas">
-                        <input type="button" value="View Areas" class="btn btn-primary" style="height:29px; line-height:75%; border-radius:0;" />
+                </a>*@
+                    <a class="companies" href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)"
+                       title="View Areas">
+                        @Html.DisplayFor(modelItem => item.CompanyName)
                     </a>
-                </td>
 
-
-            </tr>
-
-        }
-    </table>
-}
+            }
+        </div>

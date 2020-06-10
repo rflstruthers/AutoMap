@@ -8,51 +8,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title AutoMap - GeoFence</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+        <div class="card login">
+            <img class="card-img-top" src="~/images/automap-logo.png" alt="img">
+            <div id="logInContent" class="card-body">
+                @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+                {
+                    <div class="form-group">
+                        <label>User Name</label>
+                        <input name="Login" type="email" class="form-control" placeholder="User Name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input name="Password" type="password" class="form-control" placeholder="Password" required/>
+                    </div>
+                    <button type="submit" id="logIn" class="btn">Log In</button>
+                }
             </div>
         </div>
-    </div>
-    <div class="container body-content">
-        <h2>Log In</h2>
-
-        <div class="row no-gutters m-3">
-            <div class="card col-sm-12 col-md-10 col-lg-6 mx-auto shadow">
-                <div class="card-header text-center">
-                </div>
-                <div class="card-body">
-                    @using (Html.BeginForm("Login", "Home", FormMethod.Post))
-                    {
-                        <div class="row no-gutters">
-                            <div class="form-group col-md-12">
-                                <input name="Login" type="email" class="form-control" placeholder="Log In" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <input name="Password" type="password" class="form-control" placeholder="Password" />
-                            </div>
-                            <button type="submit" class="btn btn-block btn-primary">Log In</button>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year</p>
-        </footer>
-    </div>
-
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
 </body>
