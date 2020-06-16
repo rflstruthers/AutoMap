@@ -9,27 +9,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title AutoMap - GeoFence</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera&family=Muli:wght@600&family=Josefin+Sans:wght@500;600&display=swap" rel="stylesheet">
+
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
-<body>
+<body class="loginBody">
         <div class="card login">
             <img class="card-img-top" src="~/images/automap-logo.png" alt="img">
             <div id="logInContent" class="card-body">
                 @using (Html.BeginForm("Login", "Home", FormMethod.Post))
                 {
                     <div class="form-group">
-                        <label>User Name</label>
-                        <input name="Login" type="email" class="form-control" placeholder="User Name" required/>
+                        <span class="pepo">User Name</span>
+                        <input name="Login" type="email" class="form-control" placeholder="User Name" required />
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input name="Password" type="password" class="form-control" placeholder="Password" required/>
+                        <span class="pepo">Password</span>
+                        <input name="Password" type="password" class="form-control" placeholder="Password" required />
                     </div>
                     <button type="submit" id="logIn" class="btn">Log In</button>
                 }
+                <h2 id="error">@ViewBag.loginError</h2>
             </div>
         </div>
     @Scripts.Render("~/bundles/jquery")

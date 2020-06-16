@@ -11,26 +11,14 @@
 
 </head>
 <body>
-
-    @*<nav class="navbar navbar-fixed-top">
-            <a class="navbar-brand" href="@Url.Action("ReadCompanies", "Home")">
-                HOME
-            </a>
-            <img src="~/images/automap-logo.png" id="navLogo" alt="">
-            <a class="nav-item nav-link" href="@Url.Action("Index", "Home")">LOG OUT</a>
-        </nav>*@
-
-
     <div id="mySidenav" class="sidenav">
-
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a class="nav-item nav-link" href="@Url.Action("ReadCompanies", "Home")">
-            HOME
+            COMPANIES
         </a>
         <br />
         <a class="nav-item nav-link" href="@Url.Action("Index", "Home")">LOG OUT</a>
     </div>
-    @*<img src="~/images/automap-logo.png" id="navLogo" alt="">*@
     
 
     <div class="body-content">
@@ -39,12 +27,18 @@
 
     <script>
         function openNav() {
-            document.getElementById("mySidenav").style.width = "150px";
+            document.getElementById("mySidenav").style.width = "200px";
         }
 
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
+
+        document.addEventListener("click", function () {
+            if (parseInt($('#mySidenav').css('width')) > 0) {
+                document.getElementById("mySidenav").style.width = "0";
+            }
+        });
     </script>
     @*<footer>
             <p>&copy; AUTOMAP, LLC @DateTime.Now.Year</p>

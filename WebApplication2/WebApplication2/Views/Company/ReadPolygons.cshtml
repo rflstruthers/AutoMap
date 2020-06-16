@@ -31,9 +31,9 @@
                     </span>
                     <div class="btn-group right" role="group">
                         <button type="button" class="btn lView" title="List View">List</button>
+                        <button type="button" class="btn mView" title="Map View">Map</button>
                     </div>
                     <div class="btn-group left" role="group">
-                        @*<button type="button" class="btn all">View All</button>*@
                         <button type="button" id="CreateBtn" class="btn" title="Create a New Area">Create Area</button>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
 
                     <div class="btn-group right" role="group">
                         <button type="button" class="btn lView" title="List View">List</button>
-                        @*<button type="button" class="btn all">View All</button>*@
+                        <button type="button" class="btn mView" title="Map View">Map</button>
                     </div>
                     <div class="btn-group left" role="group">
                         <button type="button" id="SaveChanges" class="btn save">Save Changes</button>
@@ -81,7 +81,7 @@
                     </span>
                     <div class="btn-group right" role="group">
                         <button type="button" class="btn lView" title="List View">List</button>
-                        @*<button type="button" class="btn all">View All</button>*@
+                        <button type="button" class="btn mView" title="Map View">Map</button>
                     </div>
                     <input type="text" id="enterName" class="form-control" placeholder="Area Name">
                     <div class="btn-group left" role="group">
@@ -94,25 +94,19 @@
         </div>
 
         <div class="card-body">
+            <div id="listView">
+                <div class="card-body area-list">
+                    <ol id="areaInfo">
+                       
+                    </ol>
+                </div>
+            </div>
+
             <div id="map"></div>
         </div>
     </div>
 
-    <div id="listView" style="display:none;">
-
-        <div class="card-header">
-            <div class="areas-top">
-                <span class="open-nav">&#9776;</span>
-                <span class="title"> Areas</span>
-                <button id="mView" type="button" class="btn right" title="Map View">Map</button>
-            </div>
-        </div>
-        <div class="card-body">
-            <div id="areaInfo">
-            </div>
-        </div>
-
-    </div>
+    
 
     <script>
         var map;
@@ -131,55 +125,46 @@
         var polyListener;
 
         // toggle between map and list views
-        var m = document.getElementById("mapView");
+        var m = document.getElementById("map");
         var l = document.getElementById("listView");
+        var mbtn = document.getElementsByClassName("mView");
+        var lbtn = document.getElementsByClassName("lView");
         function showMap() {
-            l.style.display = "none"
-            m.style.display = "block";
+            l.style.width = "0";
+            m.style.width = "100%";
+            for (var i = 0; i < lbtn.length; i++) {
+                lbtn[i].style.backgroundColor = "#e3e7ee";
+                lbtn[i].style.color = "#111";
+            }
+            for (var i = 0; i < mbtn.length; i++) {
+                mbtn[i].style.backgroundColor = "#111";
+                mbtn[i].style.color = "#e3e7ee";
+            }
+            
         }
         function showList() {
-            m.style.display = "none"
-            l.style.display = "block";
+            m.style.width = "50%";
+            l.style.width = "50%";
+            for (var i = 0; i < mbtn.length; i++) {
+                mbtn[i].style.backgroundColor = "#e3e7ee";
+                mbtn[i].style.color = "#111";
+            }
+            for (var i = 0; i < lbtn.length; i++) {
+                lbtn[i].style.backgroundColor = "#111";
+                lbtn[i].style.color = "#e3e7ee";
+            }
         }
 
         // Make alerts go away after 3 seconds.
         var a = document.getElementById("alerts");
-        setTimeout(function () { a.style.display = "none" }, 3000);
+        setTimeout(function () { a.style.display = "none" }, 5000);
 
         
-
-        ///* View in fullscreen */
-        //function openFullscreen() {
-        //    if (m.requestFullscreen) {
-        //        m.requestFullscreen();
-        //    } else if (m.mozRequestFullScreen) { /* Firefox */
-        //        m.mozRequestFullScreen();
-        //    } else if (m.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-        //        m.webkitRequestFullscreen();
-        //    } else if (m.msRequestFullscreen) { /* IE/Edge */
-        //        m.msRequestFullscreen();
-        //    }
-        //}
-
-        ///* Close fullscreen */
-        //function closeFullscreen() {
-        //    if (document.exitFullscreen) {
-        //        document.exitFullscreen();
-        //    } else if (document.mozCancelFullScreen) { /* Firefox */
-        //        document.mozCancelFullScreen();
-        //    } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-        //        document.webkitExitFullscreen();
-        //    } else if (document.msExitFullscreen) { /* IE/Edge */
-        //        document.msExitFullscreen();
-        //    }
-        //}
-
+        // View all button in map.
         function CenterControl(controlDiv, map) {
-
             // Set CSS for the control border.
             var controlUI = document.createElement('div');
             controlUI.style.backgroundColor = '#fff';
-            //controlUI.style.border = '2px solid #fff';
             controlUI.style.borderRadius = '3px';
             controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
             controlUI.style.cursor = 'pointer';
@@ -270,10 +255,6 @@
                         polygonClicked(this);
                     });
 
-                    //polygon.addListener('mouseover', function () {
-                    //    polygonHover(this);
-                    //});
-
                     polygon.setMap(map);
                 </text>
              }
@@ -286,7 +267,6 @@
                 newLink.className = "list-group-item areas";
                 newLink.appendChild(document.createTextNode(polygons[i].name));
                 newLink.addEventListener('click', function () {
-                    showMap();
                     polygonClicked(polygons[i]);
                 });
                 aInfo.appendChild(newLink);
@@ -328,7 +308,7 @@
             savePolygon = event;
             // Zoom in on selected polygon and center the map on it.
             //map.setZoom(12);
-            map.fitBounds(newBounds);
+           //map.fitBounds(newBounds);
             map.setCenter(newBounds.getCenter());
         }
 
@@ -351,7 +331,6 @@
                 marker = new google.maps.Marker({
                     position: point,
                     draggable: true,
-                    //id: counter,
                     map: map,
                     icon: {
                         url: "https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle.png",
@@ -360,7 +339,6 @@
                     },
                 });
                 markers.push(marker);
-                //counter++;
                 drawPolyline();
             }
 
@@ -417,6 +395,9 @@
                 sortedPoints.push(e.position);
             });
 
+            // set save polygon paths as sorted points so polygon paths are saved correctly.
+            savePolygon.paths = sortedPoints;
+
             // check if there is already polygon drawn on map
             // remove the polygon from map before we draw new one
             if (editPolygon !== null) {
@@ -471,17 +452,14 @@
         function zoomOut(map) {
             map.fitBounds(bounds);
             map.setCenter(bounds.getCenter());
-            //map.setZoom(12);
         }
 
         // post new polygon data to UpdatePolygon method
+        // save changes to polygon
         $(document).ready(function(){
             $('#SaveChanges').click(function (e) {
                 var url = "@Url.Action("UpdatePolygon","Company")";
-                for (var i = 0; i < markers.length; i++) {
-                    polyPoints.push(markers[i].position);
-                }
-                var model = { polyPoints: JSON.stringify(polyPoints), polyId: savePolygon.id, polyName: savePolygon.name };
+                var model = { polyPoints: JSON.stringify(savePolygon.paths), polyId: savePolygon.id, polyName: savePolygon.name };
                 $.ajax({
                     type: 'POST',
                     data: model,
@@ -507,12 +485,10 @@
             });
 
             // post new polygon data to SaveCreatedPolygon method
+            // save new polygon
             $('#SaveCreated').click(function (e) {
                 var url = "@Url.Action("SaveCreatedPolygon","Company")";
-                for (var i = 0; i < markers.length; i++) {
-                    polyPoints.push(markers[i].position);
-                }
-                var model = { polyPoints: JSON.stringify(polyPoints), polyName: $("#enterName").val(), companyId: @ViewBag.companyId };
+                var model = { polyPoints: JSON.stringify(savePolygon.paths), polyName: $("#enterName").val(), companyId: @ViewBag.companyId };
 
                 $.ajax({
                     type: 'POST',
@@ -537,13 +513,9 @@
                 showList();
             });
 
-            $('#mView').click(function (e) {
+            $('.btn.mView').click(function (e) {
                 showMap();
             });
-
-            //$('#full').click(function (e) {
-            //    openFullscreen();
-            //});
 
             $('.btn.all').click(function (e) {
                 zoomOut(map);
@@ -563,7 +535,6 @@
 
 
     </script>
-    @*Enter Your Google Api Key*@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.apiKey&libraries=geometry&callback=initMap"></script>
 
 </body>

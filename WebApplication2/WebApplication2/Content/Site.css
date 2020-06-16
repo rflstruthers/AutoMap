@@ -1,7 +1,6 @@
 ﻿html,
 body {
     padding-top: 0px;
-    /*background-color: #e3e7ee;*/
     background-color: #f8f8f8;
     height: 100%;
     width: 100%;
@@ -10,8 +9,6 @@ body {
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    /*padding-left: 5px;
-    padding-right: 5px;*/
     height: 91%;
     
 }
@@ -23,16 +20,25 @@ body {
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
-}
 
 #mapView {
     height: 100%;
 }
+
+#map {
+    width: 100%;
+    height: 100%;
+    float: right;
+    transition: 0.5s;
+}
+
+#listView {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    transition: 0.5s;
+}
+
 
 .title {
     margin-left: 15px;
@@ -44,20 +50,21 @@ textarea {
     background-color: #e3e7ee;
 }
 
-    .card.companies {
-        background-color: red;
-    }
     .card.login {
-        width: 100%;
-        height: 100%;
+        width: 500px;
+        height: 600px;
         border: none;
-        /*background-color: #e3e7ee;*/
+        /*background-color: #8e8d8d;*/
         background-color: #555;
-        /*margin: 60px auto auto auto;*/
-        padding: 60px 0px 0px 0px;
-        /*box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1);*/
+        margin: 60px auto auto auto;
+        padding: 60px 20px 0px 20px;
+        box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1);
+        border-radius: 10px;
     }
 
+.loginBody {
+    background-color: #e3e7ee;
+}
 .card-body {
     padding: 0 0 0 0;
     height: 100%;
@@ -94,17 +101,23 @@ textarea {
     float: right;
 }
 
-.btn.right,
+
 .btn-group.right {
     float: right;
     margin: 0 10px 0 30px;
 }
 
 .lView,
-#mView {
+.mView {
     font-size: 18px;
     background-color: #e3e7ee;
     color: #111;
+    border-color: #111;
+}
+
+.mView {
+    color: #e3e7ee;
+    background-color: #111;
 }
 
 #CreateBtn,
@@ -119,26 +132,21 @@ textarea {
 }
     #CreateBtn:hover,
     .btn.discard:hover,
-    #mView:hover,
-    .btn.lView:hover,
+    .mView:hover,
+    .lView:hover,
     .btn.all:hover {
         color: #e3e7ee;
         background-color: #111;
     }
-/*.btn.save {
-    border-color: #019400;
-    color: #000000;
-    background-color: #019400;
-}*/
+.mView:focus,
+.lView:focus {
+    color: #e3e7ee;
+    background-color: #111;
+}
     .btn.save:hover {
         background-color: #32be1d;
         color: #e3e7ee;
     }
-/*.btn.delete {
-    border-color: #8a0000;
-    color: #000000;
-    background-color: #8a0000;
-}*/
     .btn.delete:hover {
         background-color: #ed1c28;
         color: #e3e7ee;
@@ -151,10 +159,10 @@ textarea {
     display: inline;
     margin-left: 10px;
     float: right;
+    width: 250px;
 }
 
 #editingName {
-    /*background-color: #000000;*/
     color: #ed1c28;
     font-size: 14pt;
     padding-left: 20px;
@@ -171,66 +179,43 @@ textarea {
         cursor: help;
     }
 
+
 #areaInfo {
     border-radius: 4px;
-    margin: 30px 10% 0 10%;
+    margin: 30px 10% 20px 10%;
     box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1);
     background-color: #c4c4c4;
     color: #1e1e1e;
     padding: 20px;
+}
+
+.card-body.area-list {
+    overflow-y: scroll;
+    height: 91%;
 }
 
 a.list-group-item.areas {
     font-size: 12pt;
     background-color: #c4c4c4;
     color: #1e1e1e;
-    border:none;
+    border: none;
     border-top: 1px solid black;
     width: 100%;
 }
 a.list-group-item.areas:last-child {
     border-bottom: none;
+    margin-bottom: 200px;
 }
     a.list-group-item.areas:first-child {
         border-top: none;
+        margin-top: 30px;
     }
 
-/*a.list-group-item.areas:hover {
-    color: #ffffff;
-    cursor: pointer;
-    background-color: #7e7e7e;
-}*/
-
-.card-body.companies {
-    border-radius: 4px;
-    margin: 30px 10% 0 10%;
-    box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1);
-    background-color: #c4c4c4;
-    color: #1e1e1e;
-    padding: 20px;
-    height: 30%;
-}
-
-a.list-group-item.companies {
-    font-size: 18pt;
-    border: none;
-    border-left: 10px solid #ed1c28;
-    margin-top: 10px;
-    background-color: #c4c4c4;
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-
-/*.list-group-item:first-child,
-.list-group-item:last-child {
-    border-radius: 0;
-}*/
 
 a.list-group-item:hover,
 a.list-group-item:active {
-    background-color: #7e7e7e;
-    color: #ffffff;
+    background-color: #e3e7ee;
+    color: #111;
     cursor: pointer;
 }
 
@@ -243,13 +228,13 @@ a.list-group-item:active {
     word-wrap: normal;
     transition: 0.3s;
     height: 100%;
-    width: 500px;
+    width: 450px;
     margin: 10px;
     position: relative;
     overflow: hidden;
     border: 1px solid #626262;
     border-radius: 4px;
-    padding: 10px;
+    padding: 20px 10px 20px 10px;
     background-color: #e3e7ee;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
@@ -263,42 +248,17 @@ a.list-group-item:active {
 
 .flex-card {
     display: flex;
-    justify-content: space-around;
-    /* padding: 5%; */
+    justify-content: center;
+    padding: 80px 0 100px 0; 
     flex-wrap: wrap;
     width: 90%;
-    padding: 30px;
     margin: 40px auto auto auto;
     border-radius: 4px;
     background-color: #e3e7ee;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-/*.container:hover {
-    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    z-index: 8;
-    text-decoration: none;
-    color: #e3e7ee;
-}*/
 
-/*.container {
-    text-align: center;
-    word-wrap: normal;
-    /* background: rgb(119, 119, 119); */
-    /* box-shadow: 0 1px 16px 0 rgba(0,0,0,0.5); */
-    transition: 0.3s;
-    height: 100%;
-    width: 500px;
-    margin: 10px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #626262;
-    border-radius: 4px;
-    padding: 10px;
-    background-color: #e3e7ee;
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
-}*/
 
 @media screen and (max-width: 650px) {
     a.list-group-item,
@@ -312,18 +272,23 @@ a.list-group-item:active {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    width: 350px;
 }
 
-#map {
-    width: 100%;
-    height: 100%;
+.form-control {
+    height: 50px;
 }
+
 #logIn {
     background: #f9ca1d;
-    color: #0b0d0e;
     font-family: 'Josefin Sans', sans-serif;
     text-transform: uppercase;
     font-weight: bold;
+    float: right;
+    font-size: 18px;
+    padding: 10px;
+    width: 100px;
+    margin-top: 20px;
 }
 
 #logIn:hover,
@@ -332,53 +297,20 @@ a.list-group-item:active {
     color: #0b0d0e;
 }
 
-label {
+.pepo {
     color: #111;
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-#alerts {
+#alerts,
+#error {
     color: #ed1c28;
     text-transform: uppercase;
     font-family: 'Oswald', sans-serif;
     font-size: 20px;
 }
-
-.navbar {
-    background-color: #1e1e1e;
-    height: 70px;
-    font-family: 'Josefin Sans', sans-serif;
-    margin: 0;
-    box-shadow: 0 1px 10px 0 rgba(0,0,0,0.5);
-}
-
-/*#imgNav {
-    width: 87px;
-    height: 100px;
-}*/
-
-a.navbar-brand {
-    padding-top: 30px;
-}
-.navbar-brand:hover{
-    color: #f9ca1d;
-}
-
-a.nav-item nav-link {
-    padding-top: 40px;
-}
-
-.nav-item:hover {
-    color: #ed1c28;
-}
-
-/*#navLogo {
-    height: 60px;
-    width: 90px;
-    display: inline-block;
-    margin: 0 auto 0 auto;
-}*/
 
 /*footer {
     padding: 20px 0 0 10px;
@@ -404,7 +336,6 @@ a.nav-item nav-link {
 }
 
     .sidenav a {
-        /*padding: 50px 20px 0px 20px;*/
         text-decoration: none;
         font-size: 25px;
         color: #7e7e7e;

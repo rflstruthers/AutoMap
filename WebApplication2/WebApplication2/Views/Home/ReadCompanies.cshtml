@@ -12,10 +12,6 @@
         <div class="flex-card">
             @foreach (var item in Model.Companies)
             {
-                @*<a href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)"
-                   title="View Areas" class="list-group-item companies">
-                    @Html.DisplayFor(modelItem => item.CompanyName)
-                </a>*@
                     <a class="companies" href="@Url.Action("ReadPolygons", "Company", new { id = item.CompanyID }, null)"
                        title="View Areas">
                         @Html.DisplayFor(modelItem => item.CompanyName)

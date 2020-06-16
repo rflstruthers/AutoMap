@@ -196,12 +196,9 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Company\ReadPolygons.cshtml" />
-    <Content Include="Views\Company\ViewPolygon.cshtml" />
-    <Content Include="Views\Company\CreatePolygon.cshtml" />
     <Content Include="Views\Home\ReadCompanies.cshtml" />
   </ItemGroup>
   <ItemGroup>

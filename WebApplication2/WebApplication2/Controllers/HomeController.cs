@@ -17,8 +17,6 @@ namespace WebApplication2.Controllers
 {
     public class HomeController : Controller
     {
-        //private AutoMapContext db = new AutoMapContext();
-
         public ActionResult Index()
         {
             using (AutoMapContext db = new AutoMapContext())
@@ -31,25 +29,18 @@ namespace WebApplication2.Controllers
 
         public ActionResult Login(string login, string password)
         {
-            //if input is empty, direct to an error page
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+            using (AutoMapContext db = new AutoMapContext())
             {
-                return View("~/Views/Shared/Error.cshtml");
-            }
-            else
-            {
-                using (AutoMapContext db = new AutoMapContext())
+                db.AuthorizationRequests.RemoveRange(db.AuthorizationRequests.Where(x => x.Login != null));
+                AuthorizationRequest credentials = new AuthorizationRequest
                 {
-                    AuthorizationRequest credentials = new AuthorizationRequest
-                    {
-                        Login = login,
-                        Password = password
-                    };
+                    Login = login,
+                    Password = password
+                };
 
-                    //Add the above object to the DB
-                    db.AuthorizationRequests.Add(credentials);
-                    db.SaveChanges();
-                }
+                //Add the above object to the DB
+                db.AuthorizationRequests.Add(credentials);
+                db.SaveChanges();
             }
             return RedirectToAction("ReadCompanies");
         }
@@ -74,7 +65,17 @@ namespace WebApplication2.Controllers
                     //Map response to ReadCompaniesResponse model
                     ReadCompaniesResponse companyResponse = JsonConvert.DeserializeObject<ReadCompaniesResponse>(responseString);
 
-                    return View(companyResponse);
+                    if (companyResponse.Status == "SUCCESS")
+                    {
+                        return View(companyResponse);
+                    }
+                    else
+                    {
+                        ViewBag.loginError = companyResponse.Status + ". Please try again.";
+                        return View("Index");
+                    }
+
+                    
                 }
             }
         }
