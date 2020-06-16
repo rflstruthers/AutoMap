@@ -8,8 +8,6 @@ using System.Net.Http;
 using System.Diagnostics;
 using WebApplication2.DAL;
 using System.Threading.Tasks;
-using Microsoft.Ajax.Utilities;
-using System.EnterpriseServices;
 
 namespace WebApplication2.Controllers
 {
@@ -27,9 +25,6 @@ namespace WebApplication2.Controllers
             
             using (var client = new HttpClient())
             {
-                // [Route("geofence/readpolygons")]
-                // ReadPolygonResponse Post(ReadPolygonRequest query);
-                
                 ReadPolygonRequest polygonRequest = new ReadPolygonRequest
                 {
                     Authorization = user,
@@ -71,9 +66,6 @@ namespace WebApplication2.Controllers
         {
             using (var client = new HttpClient())
             {
-                // [Route("geofence/updatepolygons")]
-                // UpdatePolygonResponse Post(UpdatePolygonRequest query);
-
                 // format polyPoints correctly
                 polyPoints = polyPoints.Replace("lat", "Latitude").Replace("lng", "Longitude");
                 List<Point> points = System.Web.Helpers.Json.Decode<List<Point>>(polyPoints);
@@ -127,9 +119,6 @@ namespace WebApplication2.Controllers
         {
             using (var client = new HttpClient())
             {
-                // [Route("geofence/createpolygons")]
-                // CreatePolygonResponse Post(CreatePolygonRequest query);
-
                 // format polyPoints correctly
                 polyPoints = polyPoints.Replace("lat", "Latitude").Replace("lng", "Longitude");
                 List<Point> points = System.Web.Helpers.Json.Decode<List<Point>>(polyPoints);
@@ -173,8 +162,6 @@ namespace WebApplication2.Controllers
         {
             using (var client = new HttpClient())
             {
-                // [Route("geofence/deletepolygons")]
-                // DeletePolygonResponse Post(DeletePolygonRequest query);
                 AuthorizationRequest user = (from l in db.AuthorizationRequests
                                              where l.Login != null
                                              select l).FirstOrDefault();
@@ -200,7 +187,7 @@ namespace WebApplication2.Controllers
                 {
                     TempData["deleteMessage"]  = "An error was encountered while attempting to delete area. Please try again later or contact the site administrator.";
                 }
-                return RedirectToAction("ReadPolygons", new { id =  TempData["companyId"]});
+                return Json(Url.Action("ReadPolygons", "Company", new { id = TempData["companyId"] }));
             }
         }
 
